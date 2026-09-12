@@ -29,7 +29,7 @@ function writeStoredPreference(pref: ThemePreference) {
   try {
     localStorage.setItem(THEME_STORAGE_KEY, pref);
   } catch {
-    // can't persist — theme still works for this tab session via React state
+    // can't persist
   }
 }
 

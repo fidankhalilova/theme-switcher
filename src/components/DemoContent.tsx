@@ -1,6 +1,5 @@
 import { Card } from "./Card";
 
-/** A few representative UI elements to prove the tokens hold up everywhere. */
 export function DemoContent() {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
