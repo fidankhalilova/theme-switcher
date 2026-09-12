@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sun, Monitor, Moon, Check } from "lucide-react";
+import { Sun, Monitor, Moon } from "lucide-react";
 import { useTheme } from "../theme/useTheme";
 import type { ThemePreference } from "../theme/types";
 
@@ -12,34 +12,24 @@ const OPTIONS: { value: ThemePreference; label: string; Icon: typeof Sun }[] = [
 export function ThemeToggle() {
   const { preference, setPreference } = useTheme();
   const groupRef = useRef<HTMLDivElement>(null);
+  const firstBtnRef = useRef<HTMLButtonElement>(null);
   const btnRefs = useRef<Record<ThemePreference, HTMLButtonElement | null>>({
     light: null,
     system: null,
     dark: null,
   });
-
-  const [overlayRect, setOverlayRect] = useState<{
-    left: number;
-    width: number;
-  } | null>(null);
+  const [slotWidth, setSlotWidth] = useState(0);
+  const activeIndex = OPTIONS.findIndex((o) => o.value === preference);
 
   useEffect(() => {
     const measure = () => {
-      const group = groupRef.current;
-      const active = btnRefs.current[preference];
-      if (!group || !active) return;
-      const groupBox = group.getBoundingClientRect();
-      const btnBox = active.getBoundingClientRect();
-      setOverlayRect({
-        left: btnBox.left - groupBox.left,
-        width: btnBox.width,
-      });
+      if (firstBtnRef.current)
+        setSlotWidth(firstBtnRef.current.getBoundingClientRect().width);
     };
-
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [preference]);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -59,11 +49,19 @@ export function ThemeToggle() {
       data-theme-transition
       className="relative inline-flex items-center gap-1 rounded-full border border-border bg-surface p-1"
     >
-      {overlayRect && (
+      {slotWidth > 0 && (
         <span
           aria-hidden="true"
-          className="absolute inset-y-1 rounded-full bg-accent shadow-sm transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
-          style={{ left: overlayRect.left, width: overlayRect.width }}
+          className={[
+            "pointer-events-none absolute inset-y-1 left-1 rounded-full",
+            "bg-accent shadow-[0_2px_10px_-2px_rgb(var(--color-accent)/0.65)] ring-1 ring-accent/40",
+            "transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+            "motion-reduce:transition-none",
+          ].join(" ")}
+          style={{
+            width: slotWidth,
+            transform: `translateX(${activeIndex * slotWidth}px)`,
+          }}
         />
       )}
 
@@ -74,6 +72,7 @@ export function ThemeToggle() {
             key={value}
             ref={(el) => {
               btnRefs.current[value] = el;
+              if (index === 0) firstBtnRef.current = el;
             }}
             type="button"
             role="radio"
@@ -83,14 +82,13 @@ export function ThemeToggle() {
             onKeyDown={(e) => handleKeyDown(e, index)}
             data-theme-transition
             className={[
-              "relative z-10 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
+              "relative z-10 flex w-24 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
               active ? "text-accent-fg" : "text-muted hover:text-fg",
             ].join(" ")}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
             {label}
-            {active && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
           </button>
         );
       })}
