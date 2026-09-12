@@ -1,0 +1,56 @@
+@import "tailwindcss";
+:root {
+    --color-bg: 254 252 232;
+    /* amber-50 */
+    --color-surface: 255 255 255;
+    /* card/elevated surfaces */
+    --color-fg: 67 30 6;
+    /* near amber-950, body text */
+    --color-fg-muted: 146 100 26;
+    /* amber-700-ish, secondary text */
+    --color-accent: 234 179 8;
+    /* yellow-500 */
+    --color-accent-fg: 40 24 4;
+    /* text on accent-colored controls */
+    --color-border: 253 230 138;
+    /* amber-200 */
+    --color-ring: 202 138 4;
+    /* yellow-600, focus ring */
+}
+
+:root[data-theme='dark'] {
+    --color-bg: 15 23 42;
+    /* slate-900 */
+    --color-surface: 30 41 59;
+    /* slate-800 */
+    --color-fg: 241 245 249;
+    /* slate-100 */
+    --color-fg-muted: 148 163 184;
+    /* slate-400 */
+    --color-accent: 250 204 21;
+    /* yellow-400, kept bright against dark bg */
+    --color-accent-fg: 15 23 42;
+    --color-border: 51 65 85;
+    /* slate-700 */
+    --color-ring: 250 204 21;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-fg));
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-theme-transition] {
+        transition-property: background-color, color, border-color;
+        transition-duration: 200ms;
+        transition-timing-function: ease-out;
+    }
+}
